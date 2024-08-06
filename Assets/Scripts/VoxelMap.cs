@@ -14,11 +14,13 @@ public class VoxelMap : MonoBehaviour
     private static readonly string[] StencilNames = { "Square", "Circle" };
     private int _fillTypeIndex, _radiusIndex, _stencilIndex;
     private readonly VoxelStencil[] _stencils = { new(), new VoxelStencilCircle() };
+    private Camera _camera;
 
     #region Unity Event Functions
 
     private void Awake()
     {
+        _camera = Camera.main;
         _halfSize = size * 0.5f;
         _chunkSize = size / chunkResolution;
         _voxelSize = _chunkSize / voxelResolution;
@@ -38,16 +40,11 @@ public class VoxelMap : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (!Input.GetMouseButton(0)) return;
+        if (!Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out var hitInfo)) return;
+        if (hitInfo.collider.gameObject == gameObject)
         {
-            RaycastHit hitInfo;
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo))
-            {
-                if (hitInfo.collider.gameObject == gameObject)
-                {
-                    EditVoxels(transform.InverseTransformPoint(hitInfo.point));
-                }
-            }
+            EditVoxels(transform.InverseTransformPoint(hitInfo.point));
         }
     }
 

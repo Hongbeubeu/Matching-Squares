@@ -5,14 +5,14 @@
     public override void Initialize(bool initFillType, int initRadius)
     {
         base.Initialize(initFillType, initRadius);
-        _sqrRadius = _radius * _radius;
+        _sqrRadius = radius * radius;
     }
 
     public override bool Apply(int x, int y, bool voxel)
     {
-        x -= _centerX;
-        y -= _centerY;
+        x -= centerX;
+        y -= centerY;
 
-        return x * x + y * y <= _sqrRadius ? _fillType : voxel;
+        return x * x + y * y <= _sqrRadius ? fillType : voxel;
     }
 }

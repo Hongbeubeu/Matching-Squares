@@ -1,27 +1,27 @@
 ﻿public class VoxelStencil
 {
-    protected bool _fillType;
-    protected int _centerX, _centerY, _radius;
+    protected bool fillType;
+    protected int centerX, centerY, radius;
     
-    public int XStart => _centerX - _radius;
-    public int XEnd => _centerX + _radius;
-    public int YStart => _centerY - _radius;
-    public int YEnd => _centerY + _radius;
+    public int XStart => centerX - radius;
+    public int XEnd => centerX + radius;
+    public int YStart => centerY - radius;
+    public int YEnd => centerY + radius;
 
     public virtual void Initialize(bool initFillType, int initRadius)
     {
-        _fillType = initFillType;
-        _radius = initRadius;
+        fillType = initFillType;
+        radius = initRadius;
     }
 
     public virtual bool Apply(int x, int y, bool voxel)
     {
-        return _fillType;
+        return fillType;
     }
 
     public virtual void SetCenter(int x, int y)
     {
-        _centerX = x;
-        _centerY = y;
+        centerX = x;
+        centerY = y;
     }
 }
