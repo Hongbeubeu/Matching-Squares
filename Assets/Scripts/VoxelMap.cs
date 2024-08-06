@@ -9,11 +9,11 @@ public class VoxelMap : MonoBehaviour
 
     private VoxelGrid[] _chunks;
     private float _chunkSize, _voxelSize, _halfSize;
-    private static string[] _fillTypeNames = { "Filled", "Empty" };
-    private static string[] _radiusNames = { "0", "1", "2", "3", "4", "5" };
-    private static string[] _stencilNames = { "Square", "Circle" };
+    private static readonly string[] FillTypeNames = { "Filled", "Empty" };
+    private static readonly string[] RadiusNames = { "0", "1", "2", "3", "4", "5" };
+    private static readonly string[] StencilNames = { "Square", "Circle" };
     private int _fillTypeIndex, _radiusIndex, _stencilIndex;
-    private VoxelStencil[] _stencils = { new(), new VoxelStencilCircle() };
+    private readonly VoxelStencil[] _stencils = { new(), new VoxelStencilCircle() };
 
     #region Unity Event Functions
 
@@ -55,11 +55,11 @@ public class VoxelMap : MonoBehaviour
     {
         GUILayout.BeginArea(new Rect(4f, 4f, 150f, 500f));
         GUILayout.Label("Fill Type");
-        _fillTypeIndex = GUILayout.SelectionGrid(_fillTypeIndex, _fillTypeNames, 2);
+        _fillTypeIndex = GUILayout.SelectionGrid(_fillTypeIndex, FillTypeNames, 2);
         GUILayout.Label("Radius");
-        _radiusIndex = GUILayout.SelectionGrid(_radiusIndex, _radiusNames, 6);
+        _radiusIndex = GUILayout.SelectionGrid(_radiusIndex, RadiusNames, 6);
         GUILayout.Label("Stencil");
-        _stencilIndex = GUILayout.SelectionGrid(_stencilIndex, _stencilNames, 2);
+        _stencilIndex = GUILayout.SelectionGrid(_stencilIndex, StencilNames, 2);
         GUILayout.EndArea();
     }
 
