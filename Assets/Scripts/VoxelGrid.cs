@@ -37,9 +37,29 @@ public class VoxelGrid : MonoBehaviour
         _voxelMaterials[i] = o.GetComponent<MeshRenderer>().material;
     }
 
-    public void SetVoxel(int x, int y, bool state)
+    public void Apply(VoxelStencil stencil)
     {
-        _voxels[y * resolution + x] = state;
+        var xStart = stencil.XStart;
+        if (xStart < 0) xStart = 0;
+
+        var xEnd = stencil.XEnd;
+        if (xEnd >= resolution) xEnd = resolution - 1;
+
+        var yStart = stencil.YStart;
+        if (yStart < 0) yStart = 0;
+
+        var yEnd = stencil.YEnd;
+        if (yEnd >= resolution) yEnd = resolution - 1;
+
+        for (var y = yStart; y <= yEnd; y++)
+        {
+            var i = y * resolution + xStart;
+            for (var x = xStart; x <= xEnd; x++, i++)
+            {
+                _voxels[i] = stencil.Apply(x, y, _voxels[i]);
+            }
+        }
+
         SetVoxelColors();
     }
 

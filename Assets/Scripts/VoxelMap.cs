@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class VoxelMap : MonoBehaviour
 {
@@ -10,6 +9,11 @@ public class VoxelMap : MonoBehaviour
 
     private VoxelGrid[] _chunks;
     private float _chunkSize, _voxelSize, _halfSize;
+    private static string[] _fillTypeNames = { "Filled", "Empty" };
+    private static string[] _radiusNames = { "0", "1", "2", "3", "4", "5" };
+    private static string[] _stencilNames = { "Square", "Circle" };
+    private int _fillTypeIndex, _radiusIndex, _stencilIndex;
+    private VoxelStencil[] _stencils = { new(), new VoxelStencilCircle() };
 
     #region Unity Event Functions
 
@@ -47,20 +51,56 @@ public class VoxelMap : MonoBehaviour
         }
     }
 
-    private void EditVoxels(Vector3 point)
+    private void OnGUI()
     {
-        var voxelX = (int)((point.x + _halfSize) / _voxelSize);
-        var voxelY = (int)((point.y + _halfSize) / _voxelSize);
-        var chunkX = voxelX / voxelResolution;
-        var chunkY = voxelY / voxelResolution;
-
-        voxelX -= chunkX * voxelResolution;
-        voxelY -= chunkY * voxelResolution;
-        _chunks[chunkY * chunkResolution + chunkX].SetVoxel(voxelX, voxelY, true);
-        Debug.Log($"{voxelX}, {voxelY} in chunk {chunkX}, {chunkY}");
+        GUILayout.BeginArea(new Rect(4f, 4f, 150f, 500f));
+        GUILayout.Label("Fill Type");
+        _fillTypeIndex = GUILayout.SelectionGrid(_fillTypeIndex, _fillTypeNames, 2);
+        GUILayout.Label("Radius");
+        _radiusIndex = GUILayout.SelectionGrid(_radiusIndex, _radiusNames, 6);
+        GUILayout.Label("Stencil");
+        _stencilIndex = GUILayout.SelectionGrid(_stencilIndex, _stencilNames, 2);
+        GUILayout.EndArea();
     }
 
     #endregion
+
+    private void EditVoxels(Vector3 point)
+    {
+        var centerX = (int)((point.x + _halfSize) / _voxelSize);
+        var centerY = (int)((point.y + _halfSize) / _voxelSize);
+
+        var xStart = (centerX - _radiusIndex) / voxelResolution;
+        if (xStart < 0) xStart = 0;
+
+        var xEnd = (centerX + _radiusIndex) / voxelResolution;
+        if (xEnd >= chunkResolution) xEnd = chunkResolution - 1;
+
+        var yStart = (centerY - _radiusIndex) / voxelResolution;
+        if (yStart < 0) yStart = 0;
+
+        var yEnd = (centerY + _radiusIndex) / voxelResolution;
+        if (yEnd >= chunkResolution) yEnd = chunkResolution - 1;
+
+
+        var activeStencil = _stencils[_stencilIndex];
+        activeStencil.Initialize(_fillTypeIndex == 0, _radiusIndex);
+
+        var voxelYOffset = yStart * voxelResolution;
+        for (var y = yStart; y <= yEnd; y++)
+        {
+            var i = y * chunkResolution + xStart;
+            var voxelXOffset = xStart * voxelResolution;
+            for (var x = xStart; x <= xEnd; x++, i++)
+            {
+                activeStencil.SetCenter(centerX - voxelXOffset, centerY - voxelYOffset);
+                _chunks[i].Apply(activeStencil);
+                voxelXOffset += voxelResolution;
+            }
+
+            voxelYOffset += voxelResolution;
+        }
+    }
 
 
     private void CreateChunk(int i, int x, int y)

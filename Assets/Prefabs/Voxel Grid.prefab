@@ -45,4 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   voxelPrefab: {fileID: 4429090276992745695, guid: 7ea359f3c3496744faba904ac4ad67a6, type: 3}
-  resolution: 10
+  resolution: 100
