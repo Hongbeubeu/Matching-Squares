@@ -67,13 +67,13 @@ public class VoxelMap : MonoBehaviour
         var centerX = (int)((point.x + _halfSize) / _voxelSize);
         var centerY = (int)((point.y + _halfSize) / _voxelSize);
 
-        var xStart = (centerX - _radiusIndex) / voxelResolution;
+        var xStart = (centerX - _radiusIndex - 1) / voxelResolution;
         if (xStart < 0) xStart = 0;
 
         var xEnd = (centerX + _radiusIndex) / voxelResolution;
         if (xEnd >= chunkResolution) xEnd = chunkResolution - 1;
 
-        var yStart = (centerY - _radiusIndex) / voxelResolution;
+        var yStart = (centerY - _radiusIndex - 1) / voxelResolution;
         if (yStart < 0) yStart = 0;
 
         var yEnd = (centerY + _radiusIndex) / voxelResolution;
@@ -83,19 +83,19 @@ public class VoxelMap : MonoBehaviour
         var activeStencil = _stencils[_stencilIndex];
         activeStencil.Initialize(_fillTypeIndex == 0, _radiusIndex);
 
-        var voxelYOffset = yStart * voxelResolution;
-        for (var y = yStart; y <= yEnd; y++)
+        var voxelYOffset = yEnd * voxelResolution;
+        for (var y = yEnd; y >= yStart; y--)
         {
-            var i = y * chunkResolution + xStart;
-            var voxelXOffset = xStart * voxelResolution;
-            for (var x = xStart; x <= xEnd; x++, i++)
+            var i = y * chunkResolution + xEnd;
+            var voxelXOffset = xEnd * voxelResolution;
+            for (var x = xEnd; x >= xStart; x--, i--)
             {
                 activeStencil.SetCenter(centerX - voxelXOffset, centerY - voxelYOffset);
                 _chunks[i].Apply(activeStencil);
-                voxelXOffset += voxelResolution;
+                voxelXOffset -= voxelResolution;
             }
 
-            voxelYOffset += voxelResolution;
+            voxelYOffset -= voxelResolution;
         }
     }
 
@@ -106,5 +106,18 @@ public class VoxelMap : MonoBehaviour
         chunk.Initialize(voxelResolution, _chunkSize);
         chunk.transform.localPosition = new Vector3(x * _chunkSize - _halfSize, y * _chunkSize - _halfSize);
         _chunks[i] = chunk;
+        if (x > 0)
+        {
+            _chunks[i - 1].xNeighbor = _chunks[i];
+        }
+
+        if (y > 0)
+        {
+            _chunks[i - chunkResolution].yNeighbor = chunk;
+            if (x > 0)
+            {
+                _chunks[i - chunkResolution - 1].xyNeighbor = chunk;
+            }
+        }
     }
 }
