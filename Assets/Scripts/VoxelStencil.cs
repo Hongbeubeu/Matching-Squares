@@ -37,6 +37,10 @@ public class VoxelStencil
         {
             FindHorizontalCrossing(xMin, xMax);
         }
+        else
+        {
+            xMin.xEdge = float.MinValue;
+        }
     }
 
     public void SetVerticalCrossing(Voxel yMin, Voxel yMax)
@@ -44,6 +48,10 @@ public class VoxelStencil
         if (yMin.state != yMax.state)
         {
             FindVerticalCrossing(yMin, yMax);
+        }
+        else
+        {
+            yMin.yEdge = float.MinValue;
         }
     }
 
@@ -58,14 +66,20 @@ public class VoxelStencil
         {
             if (xMin.position.x <= XEnd && xMax.position.x >= XEnd)
             {
-                xMin.xEdge = XEnd;
+                if(xMin.xEdge == float.MinValue || xMin.xEdge < XEnd)
+                {
+                    xMin.xEdge = XEnd;
+                }
             }
         }
         else if (xMax.state == fillType)
         {
             if (xMin.position.x <= XStart && xMax.position.x >= XStart)
             {
-                xMax.xEdge = XStart;
+                if(xMin.xEdge  == float.MinValue || xMin.xEdge > XStart)
+                {
+                    xMin.xEdge = XStart;
+                }
             }
         }
     }
@@ -81,14 +95,20 @@ public class VoxelStencil
         {
             if (yMin.position.y <= YEnd && yMax.position.y >= YEnd)
             {
-                yMin.yEdge = YEnd;
+                if(yMin.yEdge == float.MinValue || yMin.yEdge < YEnd)
+                {
+                    yMin.yEdge = YEnd;
+                }
             }
         }
         else if (yMax.state == fillType)
         {
             if (yMin.position.y <= YStart && yMax.position.y >= YStart)
             {
-                yMax.yEdge = YStart;
+                if(yMin.yEdge == float.MinValue || yMin.yEdge > YStart)
+                {
+                    yMin.yEdge = YStart;
+                }
             }
         }
     }

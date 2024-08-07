@@ -21,8 +21,8 @@ public class Voxel
         yEdgePosition = position;
         yEdgePosition.y += size * 0.5f;
 
-        xEdge = position.x + size * 0.5f;
-        yEdge = position.y + size * 0.5f;
+        xEdge = float.MinValue;
+        yEdge = float.MinValue;
     }
 
     public void BecomeXDummyOf(Voxel voxel, float offset)
