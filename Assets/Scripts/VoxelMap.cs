@@ -6,6 +6,7 @@ public class VoxelMap : MonoBehaviour
     public int voxelResolution = 8;
     public int chunkResolution = 2;
     public VoxelGrid voxelGridPrefab;
+    public Transform[] stencilVisualizations;
 
     private VoxelGrid[] _chunks;
     private float _chunkSize, _voxelSize, _halfSize;
@@ -40,11 +41,29 @@ public class VoxelMap : MonoBehaviour
 
     private void Update()
     {
-        if (!Input.GetMouseButton(0)) return;
-        if (!Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out var hitInfo)) return;
-        if (hitInfo.collider.gameObject == gameObject)
+        var visualization = stencilVisualizations[_stencilIndex];
+        if (Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out var hitInfo) &&
+            hitInfo.collider.gameObject == gameObject)
         {
-            EditVoxels(transform.InverseTransformPoint(hitInfo.point));
+            var center = transform.InverseTransformPoint(hitInfo.point);
+            center.x += _halfSize;
+            center.y += _halfSize;
+            center.x = ((int)(center.x / _voxelSize) + 0.5f) * _voxelSize;
+            center.y = ((int)(center.y / _voxelSize) + 0.5f) * _voxelSize;
+            if (Input.GetMouseButton(0))
+            {
+                EditVoxels(transform.InverseTransformPoint(hitInfo.point));
+            }
+
+            center.x -= _halfSize;
+            center.y -= _halfSize;
+            visualization.localPosition = center;
+            visualization.localScale = Vector3.one * ((_radiusIndex + 0.5f) * _voxelSize * 2f);
+            visualization.gameObject.SetActive(true);
+        }
+        else
+        {
+            visualization.gameObject.SetActive(false);
         }
     }
 
