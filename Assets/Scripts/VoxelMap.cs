@@ -7,6 +7,7 @@ public class VoxelMap : MonoBehaviour
     public int chunkResolution = 2;
     public VoxelGrid voxelGridPrefab;
     public Transform[] stencilVisualizations;
+    public bool snapToGrid;
 
     private VoxelGrid[] _chunks;
     private float _chunkSize, _voxelSize, _halfSize;
@@ -48,11 +49,15 @@ public class VoxelMap : MonoBehaviour
             var center = transform.InverseTransformPoint(hitInfo.point);
             center.x += _halfSize;
             center.y += _halfSize;
-            center.x = ((int)(center.x / _voxelSize) + 0.5f) * _voxelSize;
-            center.y = ((int)(center.y / _voxelSize) + 0.5f) * _voxelSize;
+            if (snapToGrid)
+            {
+                center.x = ((int)(center.x / _voxelSize) + 0.5f) * _voxelSize;
+                center.y = ((int)(center.y / _voxelSize) + 0.5f) * _voxelSize;
+            }
+
             if (Input.GetMouseButton(0))
             {
-                EditVoxels(transform.InverseTransformPoint(hitInfo.point));
+                EditVoxels(center);
             }
 
             center.x -= _halfSize;
@@ -81,26 +86,24 @@ public class VoxelMap : MonoBehaviour
 
     #endregion
 
-    private void EditVoxels(Vector3 point)
+    private void EditVoxels(Vector2 center)
     {
-        var centerX = (int)((point.x + _halfSize) / _voxelSize);
-        var centerY = (int)((point.y + _halfSize) / _voxelSize);
+        var activeStencil = _stencils[_stencilIndex];
+        activeStencil.Initialize(_fillTypeIndex == 0, (_radiusIndex + 0.5f) * _voxelSize);
+        activeStencil.SetCenter(center.x, center.y);
 
-        var xStart = (centerX - _radiusIndex - 1) / voxelResolution;
+        var xStart = (int)((activeStencil.XStart - _voxelSize) / _chunkSize);
         if (xStart < 0) xStart = 0;
 
-        var xEnd = (centerX + _radiusIndex) / voxelResolution;
+        var xEnd = (int)((activeStencil.XEnd + _voxelSize) / _chunkSize);
         if (xEnd >= chunkResolution) xEnd = chunkResolution - 1;
 
-        var yStart = (centerY - _radiusIndex - 1) / voxelResolution;
+        var yStart = (int)((activeStencil.YStart - _voxelSize) / _chunkSize);
         if (yStart < 0) yStart = 0;
 
-        var yEnd = (centerY + _radiusIndex) / voxelResolution;
+        var yEnd = (int)((activeStencil.YEnd + _voxelSize) / _chunkSize);
         if (yEnd >= chunkResolution) yEnd = chunkResolution - 1;
 
-
-        var activeStencil = _stencils[_stencilIndex];
-        activeStencil.Initialize(_fillTypeIndex == 0, _radiusIndex);
 
         var voxelYOffset = yEnd * voxelResolution;
         for (var y = yEnd; y >= yStart; y--)
@@ -109,7 +112,7 @@ public class VoxelMap : MonoBehaviour
             var voxelXOffset = xEnd * voxelResolution;
             for (var x = xEnd; x >= xStart; x--, i--)
             {
-                activeStencil.SetCenter(centerX - voxelXOffset, centerY - voxelYOffset);
+                activeStencil.SetCenter(center.x - x * _chunkSize, center.y - y * _chunkSize);
                 _chunks[i].Apply(activeStencil);
                 voxelXOffset -= voxelResolution;
             }
