@@ -1,69 +1,60 @@
 ﻿using System;
 using UnityEngine;
 
-[Serializable]
-public class Voxel
+namespace MatchingSquare
 {
-    public bool state;
-    public Vector2 position, xEdgePosition, yEdgePosition;
-    public float xEdge, yEdge;
-    public Voxel()
+    [Serializable]
+    public class Voxel
     {
-    }
+        public bool state;
+        public Vector2 position;
+        public float xEdge, yEdge;
+        public Vector2 xNormal, yNormal;
 
-    public Voxel(int x, int y, float size)
-    {
-        position.x = (x + 0.5f) * size;
-        position.y = (y + 0.5f) * size;
+        public Vector2 XEdgePoint => new Vector2(xEdge, position.y);
+        public Vector2 YEdgePoint => new Vector2(position.x, yEdge);
 
-        xEdgePosition = position;
-        xEdgePosition.x += size * 0.5f;
-        yEdgePosition = position;
-        yEdgePosition.y += size * 0.5f;
+        public Voxel()
+        {
+        }
 
-        xEdge = float.MinValue;
-        yEdge = float.MinValue;
-    }
+        public Voxel(int x, int y, float size)
+        {
+            position.x = (x + 0.5f) * size;
+            position.y = (y + 0.5f) * size;
 
-    public void BecomeXDummyOf(Voxel voxel, float offset)
-    {
-        state = voxel.state;
-        position = voxel.position;
-        xEdgePosition = voxel.xEdgePosition;
-        yEdgePosition = voxel.yEdgePosition;
-        position.x += offset;
-        xEdgePosition.x += offset;
-        yEdgePosition.x += offset;
-        xEdge = voxel.xEdge + offset;
-        yEdge = voxel.yEdge;
-    }
+            xEdge = float.MinValue;
+            yEdge = float.MinValue;
+        }
 
-    public void BecomeYDummyOf(Voxel voxel, float offset)
-    {
-        state = voxel.state;
-        position = voxel.position;
-        xEdgePosition = voxel.xEdgePosition;
-        yEdgePosition = voxel.yEdgePosition;
-        position.y += offset;
-        xEdgePosition.y += offset;
-        yEdgePosition.y += offset;
-        xEdge = voxel.xEdge;
-        yEdge = voxel.yEdge + offset;
-    }
+        public void BecomeXDummyOf(Voxel voxel, float offset)
+        {
+            state = voxel.state;
+            position = voxel.position;
+            position.x += offset;
+            xEdge = voxel.xEdge + offset;
+            yEdge = voxel.yEdge;
+            yNormal = voxel.yNormal;
+        }
 
-    public void BecomeXYDummyOf(Voxel voxel, float offset)
-    {
-        state = voxel.state;
-        position = voxel.position;
-        xEdgePosition = voxel.xEdgePosition;
-        yEdgePosition = voxel.yEdgePosition;
-        position.x += offset;
-        position.y += offset;
-        xEdgePosition.x += offset;
-        xEdgePosition.y += offset;
-        yEdgePosition.x += offset;
-        yEdgePosition.y += offset;
-        xEdge = voxel.xEdge + offset;
-        yEdge = voxel.yEdge + offset;
+        public void BecomeYDummyOf(Voxel voxel, float offset)
+        {
+            state = voxel.state;
+            position = voxel.position;
+            position.y += offset;
+            xEdge = voxel.xEdge;
+            yEdge = voxel.yEdge + offset;
+            xNormal = voxel.xNormal;
+        }
+
+        public void BecomeXYDummyOf(Voxel voxel, float offset)
+        {
+            state = voxel.state;
+            position = voxel.position;
+            position.x += offset;
+            position.y += offset;
+            xEdge = voxel.xEdge + offset;
+            yEdge = voxel.yEdge + offset;
+        }
     }
 }

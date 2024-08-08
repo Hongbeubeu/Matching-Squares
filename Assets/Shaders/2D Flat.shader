@@ -3,6 +3,7 @@
     Properties
     {
         _Color ("Color", Color) = (1,1,1,1)
+        _MainTex ("Texture", 2D) = "white" {}
     }
     SubShader
     {
@@ -17,10 +18,11 @@
         #pragma surface surf Lambert vertex:vert
 
         fixed4 _Color;
+        sampler2D _MainTex;
 
         struct Input
         {
-            float2 dummy;
+            float2 uv_MainText;
         };
 
         void vert(inout appdata_full v)
@@ -30,7 +32,8 @@
 
         void surf(Input IN, inout SurfaceOutput o)
         {
-            o.Albedo = _Color.rgb;
+            fixed4 texColor = tex2D(_MainTex, IN.uv_MainText);
+            o.Albedo = texColor.rgb * _Color.rgb;
         }
         ENDCG
     }
