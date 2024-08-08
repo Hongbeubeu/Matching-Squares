@@ -7,6 +7,7 @@ namespace MatchingSquare
     {
         public GameObject voxelPrefab;
         public VoxelGridSurface surfacePrefab;
+        public VoxelGridWall wallPrefab;
         public VoxelGrid xNeighbor, yNeighbor, xyNeighbor;
 
         private int resolution;
@@ -16,7 +17,8 @@ namespace MatchingSquare
         private Voxel _dummyX, _dummyY, _dummyT;
         private float _sharpFeatureLimit;
         private VoxelGridSurface surface;
-
+        private VoxelGridWall wall;
+        
         public void Initialize(int initResolution, float initSize, float maxFeatureAngle)
         {
             resolution = initResolution;
