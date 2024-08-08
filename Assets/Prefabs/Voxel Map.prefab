@@ -45,6 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 2
-  voxelResolution: 100
+  voxelResolution: 10
   chunkResolution: 1
   voxelGridPrefab: {fileID: 2505819982140568239, guid: 3cd78a3858dbedc499e5b9c010e586cb, type: 3}
+  stencilVisualizations: []
+  snapToGrid: 0
+  maxFeatureAngle: 135
